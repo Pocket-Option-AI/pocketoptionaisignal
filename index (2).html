@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pocket Option - User Profile</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --bg-main: #0B1A30;       
+            --bg-card: #1C355E;       
+            --primary-blue: #007BFF;  
+            --text-main: #FFFFFF;
+            --text-muted: #8B9DC3;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --success-green: #28a745;
+            --purple-ring: #8A2BE2;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px; 
+            background-color: var(--bg-main);
+            position: relative;
+            padding-bottom: 40px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- PAGE TRANSITION LOGIC --- */
+        .page-view {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .page-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* --- TOP NAVIGATION --- */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #081527; 
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .top-nav .menu-icon, .top-nav .back-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .top-nav .close-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            position: absolute;
+            right: 20px;
+            top: 70px;
+            z-index: 10;
+        }
+
+        /* --- PROFILE HEADER --- */
+        .profile-header {
+            padding: 30px 20px 20px 20px;
+            position: relative;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--purple-ring); 
+        }
+
+        .user-details h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-details p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        /* --- WALLET CARD --- */
+        .wallet-card {
+            background-color: var(--bg-card);
+            margin: 0 20px;
+            border-radius: 12px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .wallet-icon-box {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        .wallet-balance {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* --- SUBSCRIPTION BANNER & ACTION --- */
+        .subscription-banner {
+            background-color: rgba(40, 167, 69, 0.15); 
+            border: 1px solid var(--success-green);
+            margin: 15px 20px;
+            border-radius: 10px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .subscription-banner i {
+            color: var(--success-green);
+            font-size: 1.5rem;
+        }
+
+        .subscription-banner div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .subscription-banner span:first-child {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--success-green);
+        }
+
+        .subscription-banner span:last-child {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .proceed-btn {
+            display: block;
+            width: calc(100% - 40px);
+            margin: 0 20px 15px 20px;
+            padding: 14px;
+            background-color: var(--primary-blue);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+        }
+
+        /* --- ACTION BUTTONS --- */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            padding: 10px 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            text-transform: uppercase;
+        }
+
+        .btn-deposit {
+            background-color: var(--text-main);
+            color: var(--bg-main);
+        }
+
+        .btn-trade {
+            background-color: var(--primary-blue);
+            color: var(--text-main);
+        }
+
+        /* --- MENU LIST --- */
+        .menu-list {
+            list-style: none;
+            padding: 0 20px;
+            margin-top: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .menu-item i {
+            width: 30px;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-right: 15px;
+        }
+
+        .menu-item span {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 10px 0;
+        }
+
+        /* --- VERIFICATION PAGE STYLES --- */
+        .verification-header {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .verification-header h2 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        .verification-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .verification-list {
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .verify-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--primary-blue);
+            transition: transform 0.2s;
+        }
+
+        .verify-card:hover {
+            transform: scale(1.02);
+        }
+
+        .verify-info h3 {
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        .verify-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .verify-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            text-align: right;
+        }
+
+        .verify-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+        }
+
+        .verify-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .verify-btn i {
+            font-size: 1rem;
+        }
+        
+        .verify-action {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- ========================================== -->
+        <!-- PAGE 1: DASHBOARD VIEW                     -->
+        <!-- ========================================== -->
+        <div id="dashboardView" class="page-view active">
+            <!-- Top Bar -->
+            <header class="top-nav">
+                <i class="fa-solid fa-bars menu-icon"></i>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">The Most Innovative...</div>
+                <div style="display: flex; gap: 15px;">
+                    <i class="fa-solid fa-share-nodes" style="color: var(--text-muted);"></i>
+                    <i class="fa-solid fa-gear" style="color: var(--text-muted);"></i>
+                </div>
+            </header>
+
+            <!-- Profile Area -->
+            <div class="profile-header">
+                <i class="fa-solid fa-xmark close-icon"></i>
+                <div class="profile-info">
+                    <div class="avatar-container">
+                        <img src="https://ui-avatars.com/api/?name=Petros+V&background=random&color=fff" alt="Profile" class="avatar">
+                    </div>
+                    <div class="user-details">
+                        <h2>Petros V.</h2>
+                        <p>id 140348137</p>
+                        <p>vusiqongo@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Balance Area -->
+            <div class="wallet-card">
+                <div class="wallet-icon-box">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div class="wallet-balance">$76.51</div>
+            </div>
+
+            <!-- Active Subscription Indicator -->
+            <div class="subscription-banner">
+                <i class="fa-solid fa-circle-check"></i>
+                <div>
+                    <span>Subscription Active</span>
+                    <span>You have completed the $45.00 Plan.</span>
+                </div>
+            </div>
+
+            <!-- NEXT PAGE BUTTON -->
+            <button class="proceed-btn" onclick="showVerification()">
+                <i class="fa-solid fa-arrow-right"></i> Proceed to Verification
+            </button>
+
+            <!-- Main Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-deposit">Deposit</button>
+                <button class="btn btn-trade">Trade Now</button>
+            </div>
+
+            <!-- Sidebar Menu List -->
+            <ul class="menu-list">
+                <li class="menu-item"><i class="fa-regular fa-user"></i><span>Profile</span></li>
+                <li class="menu-item"><i class="fa-solid fa-box-open"></i><span>Deposit</span></li>
+                <li class="menu-item"><i class="fa-solid fa-arrow-up-from-bracket"></i><span>Withdrawal</span></li>
+                <li class="menu-item"><i class="fa-regular fa-bell"></i><span>Notifications</span></li>
+                <li class="menu-item"><i class="fa-regular fa-envelope-open"></i><span>Support</span></li>
+                <li class="menu-item"><i class="fa-regular fa-newspaper"></i><span>News</span></li>
+                <li class="menu-item"><i class="fa-solid fa-gear"></i><span>Settings</span></li>
+                <div class="divider"></div>
+                <li class="menu-item"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Logout</span></li>
+            </ul>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PAGE 2: VERIFICATION VIEW                  -->
+        <!-- ========================================== -->
+        <div id="verificationView" class="page-view">
+            <!-- Top Bar -->
+            <header class="top-nav">
+                <i class="fa-solid fa-arrow-left back-icon" onclick="showDashboard()"></i>
+                <div style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;">Wallet Verification</div>
+                <div style="width: 24px;"></div> <!-- Spacer -->
+            </header>
+
+            <div class="verification-header">
+                <h2>Select AI Signal Verification</h2>
+                <p>To link the AI signals to your wallet, please select the verification plan that matches your current subscription tier.</p>
+            </div>
+
+            <div class="verification-list">
+                <!-- Verify Card 1 -->
+                <div class="verify-card">
+                    <div class="verify-info">
+                        <h3>$45 Plan Verification</h3>
+                        <p>Unlock AI Signals for your current plan.</p>
+                    </div>
+                    <div class="verify-action">
+                        <div class="verify-price">$110</div>
+                        <button onclick="redirectToTelegram('45')" class="verify-btn">
+                            <i class="fa-brands fa-telegram"></i> Verify
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Verify Card 2 -->
+                <div class="verify-card">
+                    <div class="verify-info">
+                        <h3>$78 Plan Verification</h3>
+                        <p>Unlock AI Signals for your current plan.</p>
+                    </div>
+                    <div class="verify-action">
+                        <div class="verify-price">$150</div>
+                        <button onclick="redirectToTelegram('78')" class="verify-btn">
+                            <i class="fa-brands fa-telegram"></i> Verify
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Verify Card 3 -->
+                <div class="verify-card">
+                    <div class="verify-info">
+                        <h3>$100 Plan Verification</h3>
+                        <p>Unlock AI Signals for your current plan.</p>
+                    </div>
+                    <div class="verify-action">
+                        <div class="verify-price">$198</div>
+                        <button onclick="redirectToTelegram('100')" class="verify-btn">
+                            <i class="fa-brands fa-telegram"></i> Verify
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Verify Card 4 -->
+                <div class="verify-card">
+                    <div class="verify-info">
+                        <h3>$150 Plan Verification</h3>
+                        <p>Unlock AI Signals for your current plan.</p>
+                    </div>
+                    <div class="verify-action">
+                        <div class="verify-price">$225</div>
+                        <button onclick="redirectToTelegram('150')" class="verify-btn">
+                            <i class="fa-brands fa-telegram"></i> Verify
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT FOR PAGE SWITCHING & TELEGRAM REDIRECT -->
+    <script>
+        const dashboardView = document.getElementById('dashboardView');
+        const verificationView = document.getElementById('verificationView');
+
+        // Function to show Verification Page
+        function showVerification() {
+            dashboardView.classList.remove('active');
+            verificationView.classList.add('active');
+            window.scrollTo(0, 0); 
+        }
+
+        // Function to go back to Dashboard
+        function showDashboard() {
+            verificationView.classList.remove('active');
+            dashboardView.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // Function to redirect to Telegram with the specific message
+        function redirectToTelegram(subAmount) {
+            // The exact message you requested
+            const message = `Successful Subscription of $${subAmount} was made. Now I'm ready to finish the verification plan of it through your Last guidance. Thanks 🙏.`;
+            
+            // Encode the message so it works perfectly in a URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Telegram Bot username
+            const telegramBot = "JAMES_AI_TRADING_BOT";
+            
+            // Create the final URL
+            const telegramUrl = `https://t.me/${telegramBot}?text=${encodedMessage}`;
+            
+            // Open Telegram in a new tab
+            window.open(telegramUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
